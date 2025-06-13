@@ -26,5 +26,13 @@ urlpatterns = [
     path("", LoginView.as_view(template_name="authentication/login.html", redirect_authenticated_user=True), name="login"),
     path("logout/", authentication.views.logout_user, name="logout"),
     path("home/", book_reviews.views.home, name="home"),
+    path("follow/", book_reviews.views.follow, name="follow"),
     path("signup/", authentication.views.signup_page, name="signup"),
+    path("create-ticket/", book_reviews.views.create_ticket , name="create_ticket"),
+    path("update-ticket/<int:ticket_id>/", book_reviews.views.update_ticket, name="update_ticket"),
+    path("delete-ticket/<int:ticket_id>/", book_reviews.views.delete_ticket, name="delete_ticket"),
+    path("create-review/<int:ticket_id>/", book_reviews.views.create_review , name="create_review"),
+    path("update-review/<int:review_id>/", book_reviews.views.update_review, name="update_review"),
+    path("delete-review/<int:review_id>/", book_reviews.views.delete_review, name="delete_review"),
+    path("create_ticket_and_review/", book_reviews.views.create_ticket_and_review, name="create_ticket_and_review"),
 ]

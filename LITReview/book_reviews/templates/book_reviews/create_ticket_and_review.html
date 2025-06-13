@@ -1,0 +1,26 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1>Crée une critique</h1>
+
+    <form action ="" method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <div class="ticket-section"></div>
+            <h2>Livre / Article</h2>
+            {{ ticket_form.as_p }}
+        </div>
+
+        <div class="review-section">
+            <h2>Ma critique</h2>
+            {{ review_form.as_p }}
+        </div>
+
+        <input type="submit" value="Envoyer">
+        <a href="{% url 'home' %}" class="cancel-button">Annuler</a>
+    </form>
+
+    <p><a href="{% url 'home' %}">Retour au flux</a></p>
+
+{% endblock content %}

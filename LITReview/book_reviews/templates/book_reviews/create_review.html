@@ -1,0 +1,28 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1>Vous êtes en train de poster en réponse à :</h1>
+
+    <div class="ticket-details-for-review">
+        <p>{{ ticket.user }} a demandé une critique</p>
+        <p>{{ ticket.title }}</p>
+        <p>{{ ticket.description }}</p>
+        <div class="date">Posté le : {{ ticket.time_created|date:"d M Y H:i" }}</div>
+        {% if ticket.image %}
+            <img src="{{ ticket.image.url }}" alt="Image du billet" width="150">
+        {% endif %}
+    </div>
+
+    <div class="critique-details">
+        <h2>Ma critique</h2>
+        <form action ="" method="post" novalidate>
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Envoyer">
+            <a href="{% url 'home' %}" class="cancel-button">Annuler</a>
+        </form>
+    </div>
+    <p><a href="{% url 'home' %}">Retour au flux</a></p>
+
+{% endblock content %}

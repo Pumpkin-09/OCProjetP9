@@ -1,0 +1,16 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1>Crée un billet</h1>
+
+    <form action ="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Envoyer">
+        <a href="{% url 'home' %}" class="cancel-button">Annuler</a>
+    </form>
+
+    <p><a href="{% url 'home' %}">Retour au flux</a></p>
+
+{% endblock content %}

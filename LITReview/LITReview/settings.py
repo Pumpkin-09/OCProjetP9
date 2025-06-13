@@ -129,3 +129,4 @@ AUTH_USER_MODEL = 'authentication.User'
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
+

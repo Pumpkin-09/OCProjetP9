@@ -1,0 +1,10 @@
+
+<h1>Supprimer le billet</h1>
+
+<p>Etes-vous sûr de vouloir supprimer le billet : {{ ticket.title }} ?</p>
+
+<form action="" method="post">
+{% csrf_token %}
+<input type="submit" value="Supprimer" class="delete-button">
+<a href="{% url 'post' %}" class="cancel-button">Annuler</a>
+</form>

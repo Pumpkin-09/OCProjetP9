@@ -1,5 +1,6 @@
 
 {% extends 'base.html' %}
 {% block content %}
-    <p>Vous êtes connecté !</p>
+    <a href="{% url 'create_ticket' %}" class="btn">Demander une critique</a>
+    <a href="{% url 'create_review' %}" class="btn">Créer une critique</a>
 {% endblock content %}

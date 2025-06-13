@@ -1,0 +1,15 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1>Modifier la critique : {{ review.title }}</h1>
+    <h2>Livre / Article</h2>
+    <form action ="" method="post" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Modifier la crituque">
+    </form>
+
+    <p><a href="{% url 'home' %}">Retour au flux</a></p>
+
+{% endblock content %}

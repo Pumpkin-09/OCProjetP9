@@ -1,0 +1,27 @@
+
+{% extends 'base.html' %}
+{% block content %}
+
+<div> modifier un ticket, a implementer.
+    <h3>{{ item.title }}</h3>
+    <p>{{ item.description }}</p>
+    {# ... autres détails du ticket ... #}
+
+    {% if item.user == request.user %}
+        <a href="{% url 'ticket_update' item.id %}" class="btn-primary">Modifier</a>
+    {% endif %}
+    {# ... autres liens comme 'créer une critique' ... #}
+</div>
+
+<div> modifier une critique, a implementer.
+    <h3>{{ item.title }}</h3>
+    <p>{{ item.description }}</p>
+    {# ... autres détails du ticket ... #}
+
+    {% if item.user == request.user %}
+        <a href="{% url 'review_update' item.id %}" class="btn-primary">Modifier</a>
+    {% endif %}
+    {# ... autres liens comme 'créer une critique' ... #}
+</div>
+
+{% endblock content %}

@@ -1,15 +1,36 @@
 
 <html>
     <head>
+        <meta charset="utf-8">
         <title>{% block title %}LITReview{% endblock title %}</title>
         {% load static %}
         <link rel="stylesheet" href="{% static 'css/style.css' %}">
     </head>
     <body>
-        <h1>LITReview</h1>
-        {% block content %}{% endblock content %}
-        {% if user.is_authenticated %}
-            <a href="{% url 'logout' %}">Se déconnecter</a>
-            {% endif %}
+        <header>
+            <h1>LITReview</h1>
+            <nav>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'home' %}">Flux</a>
+                    <!-- <a href="{% url 'posts' }">Posts</a> -->
+                    <!-- <a href="{% url 'follow' }">Abonnements</a> -->
+                    <a href="{% url 'logout' %}">Se déconnecter</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        <main>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li{% if message.tags %} class ="{{ message.tag }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+            {% block content %}
+            {% endblock content %}
+        </main>
+
     </body>
 </html>
