@@ -26,7 +26,7 @@ urlpatterns = [
     path("", LoginView.as_view(template_name="authentication/login.html", redirect_authenticated_user=True), name="login"),
     path("logout/", authentication.views.logout_user, name="logout"),
     path("home/", book_reviews.views.home, name="home"),
-    path("follow/", book_reviews.views.follow, name="follow"),
+    path("follow/", book_reviews.views.follow_by_username, name="follow"),
     path("signup/", authentication.views.signup_page, name="signup"),
     path("create-ticket/", book_reviews.views.create_ticket , name="create_ticket"),
     path("update-ticket/<int:ticket_id>/", book_reviews.views.update_ticket, name="update_ticket"),

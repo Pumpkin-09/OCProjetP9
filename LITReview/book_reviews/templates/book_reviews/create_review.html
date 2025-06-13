@@ -20,9 +20,9 @@
             {% csrf_token %}
             {{ form.as_p }}
             <input type="submit" value="Envoyer">
-            <a href="{% url 'home' %}" class="cancel-button">Annuler</a>
         </form>
     </div>
+
     <p><a href="{% url 'home' %}">Retour au flux</a></p>
 
 {% endblock content %}
