@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ticket, Review
+from .models import Ticket, Review, UserFollows
 
 
 class TicketForm(forms.ModelForm):
@@ -26,3 +26,11 @@ class ReviewForm(forms.ModelForm):
             "headline": "Titre",
             "body": "Texte"
         }
+
+
+class SearchUserForm(forms.Form):
+    user_searched = forms.CharField(
+        min_length=3,
+        required=True,
+        widget=forms.TextInput(attrs={"placeholder": "Nom d'utilisateur"})
+        )

@@ -1,0 +1,67 @@
+
+{% extends"base.html" %}
+{% block content %}
+
+    <h1>Suivre d'autres utilisateurs</h1>
+
+    <form action ="{% url 'search_user' %}" method="get">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Envoyer">
+    </form>
+
+
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class ="{{ message.tag }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    {% if searched and found_user %}
+        <h2>Résultat de la recherche:</h2>
+        <ul class="list_user">
+            {% for found in found_user%}
+            <li>
+                {{ found.id }}
+                <form action ="{% url 'follow_action' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="followed_user_id" value="{{ found.id }}">
+                    <input type="hidden" name="action" value="follow">
+                    <input type="submit" value="Suivre">
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <h1>Abonnements</h1>
+
+    <form action ="{% url 'follow_action' %}" method="post">
+        {% csrf_token %}
+        <ul class="follow_user">
+            {% for user in user_following %}
+            <li>
+                {{ user.id }}
+                    <form action ="{% url 'follow_action' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="unfollowed_user_id" value="{{ user.id }}">
+                    <input type="hidden" name="action" value="unfollow">
+                    <input type="submit" value="Désabonner">
+                </form>
+            </li>
+            {% endfor %}
+        </ul>
+    </form>
+
+    <h1>Abonnés</h1>
+    <ul class="follower_user">
+        {% for follower in user_follower %}
+        <li>
+            {{ follower.id }}
+        </li>
+        {% endfor %}
+    </ul>
+
+{% endblock content %}

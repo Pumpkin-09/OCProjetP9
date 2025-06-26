@@ -14,6 +14,8 @@ class Ticket(models.Model):
     image = models.ImageField(null=True, blank=True)
     time_created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-time_created"]
 
 class Review(models.Model):
 
@@ -27,6 +29,9 @@ class Review(models.Model):
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     time_created = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        ordering = ["-time_created"]
+
 
 class UserFollows(models.Model):
     user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="following")
@@ -34,3 +39,4 @@ class UserFollows(models.Model):
 
     class Meta:
         unique_together = ("user", "followed_user")
+        ordering = ["followed_user__username", "user__username"]
