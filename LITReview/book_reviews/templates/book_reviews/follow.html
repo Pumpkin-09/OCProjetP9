@@ -1,15 +1,22 @@
 
-{% extends"base.html" %}
+{% extends 'base.html' %}
 {% block content %}
 
     <h1>Suivre d'autres utilisateurs</h1>
 
-    <form action ="{% url 'search_user' %}" method="get">
+    <form action ="{% url 'manage_users' %}" method="get">
         {% csrf_token %}
-        {{ form.as_p }}
+
+        {{ form.user_searched }}
+            {% if searched and form.user_searched.errors %}
+                <ul class="errorlist">
+                    {% for error in form.user_searched.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         <input type="submit" value="Envoyer">
     </form>
-
 
     {% if messages %}
         <ul class="messages">
@@ -24,8 +31,8 @@
         <ul class="list_user">
             {% for found in found_user%}
             <li>
-                {{ found.id }}
-                <form action ="{% url 'follow_action' %}" method="post">
+                <span>{{ found.username }}</span>
+                <form action ="{% url 'follow_action' %}" method="post" style="display: inline;">
                     {% csrf_token %}
                     <input type="hidden" name="followed_user_id" value="{{ found.id }}">
                     <input type="hidden" name="action" value="follow">
@@ -41,12 +48,12 @@
     <form action ="{% url 'follow_action' %}" method="post">
         {% csrf_token %}
         <ul class="follow_user">
-            {% for user in user_following %}
+            {% for user in user_following_objects %}
             <li>
-                {{ user.id }}
+                {{ user.username }}
                     <form action ="{% url 'follow_action' %}" method="post">
                     {% csrf_token %}
-                    <input type="hidden" name="unfollowed_user_id" value="{{ user.id }}">
+                    <input type="hidden" name="unfollow_user_id" value="{{ user.id }}">
                     <input type="hidden" name="action" value="unfollow">
                     <input type="submit" value="Désabonner">
                 </form>
@@ -57,9 +64,9 @@
 
     <h1>Abonnés</h1>
     <ul class="follower_user">
-        {% for follower in user_follower %}
+        {% for follower in user_follower_objects %}
         <li>
-            {{ follower.id }}
+            {{ follower.username }}
         </li>
         {% endfor %}
     </ul>

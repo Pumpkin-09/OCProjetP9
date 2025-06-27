@@ -13,20 +13,22 @@
                 {% if user.is_authenticated %}
                     <a href="{% url 'home' %}">Flux</a>
                     <!-- <a href="{% url 'posts' }">Posts</a> -->
-                    <!-- <a href="{% url 'follow' }">Abonnements</a> -->
+                    <a href="{% url 'manage_users' %}">Abonnements</a>
                     <a href="{% url 'logout' %}">Se déconnecter</a>
                 {% endif %}
             </nav>
         </header>
 
         <main>
-            {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                        <li{% if message.tags %} class ="{{ message.tag }}"{% endif %}>{{ message }}</li>
-                    {% endfor %}
-                </ul>
+            {% block messages_content %}
+                {% if messages and not specific_message %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li{% if message.tags %} class ="{{ message.tag }}"{% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
                 {% endif %}
+            {% endblock messages_content %}
 
             {% block content %}
             {% endblock content %}

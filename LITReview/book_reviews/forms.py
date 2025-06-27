@@ -30,6 +30,7 @@ class ReviewForm(forms.ModelForm):
 
 class SearchUserForm(forms.Form):
     user_searched = forms.CharField(
+        label="",
         min_length=3,
         required=True,
         widget=forms.TextInput(attrs={"placeholder": "Nom d'utilisateur"})

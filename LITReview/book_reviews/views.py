@@ -7,6 +7,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
+
 @login_required
 def home(request):
     return render(request, "book_reviews/home.html")
@@ -16,29 +17,32 @@ def home(request):
 def search_user(request):
     form = SearchUserForm(request.GET)
     searched = False
-    user_following = request.user.following.values_list('followed_user__id', flat=True)
-    user_follower = request.user.followed_user.values_list('followed_by', flat=True)
+    found_user = User.objects.none()
+    user_following_objects = [user_following.followed_user for user_following in request.user.following.all()]
+    user_follower_objects = [user_follower.user for user_follower in request.user.followed_by.all()]
 
-    if form.is_valid():
-        searched = True
-        user_searched = form.cleaned_data["user_searched"]
-        followed_user = request.user.following.values_list('followed_user__id', flat=True)
-        found_user = User.objects.filter(username__icontains=user_searched).exclude(id=request.user.id, id__in=followed_user)
-        if not found_user.exists():
-            messages.info(request, f"Aucun utilisateur touvé pour : {user_searched}.")
-        
-    else:
-        searched = True
-        messages.error(request, f"Recherche non valide.")
+    if request.method == "GET" and request.GET:
+        if form.is_valid():
+            searched = True
+            user_searched = form.cleaned_data["user_searched"]
+            followed_user = request.user.following.values_list('followed_user__id', flat=True)
+            found_user = User.objects.filter(username__icontains=user_searched).exclude(id=request.user.id).exclude(id__in=followed_user)
+            if not found_user.exists():
+                messages.info(request, f"Aucun utilisateur touvé pour : {user_searched}.")
+
+        else:
+            searched = True
+            messages.error(request, f"Recherche non valide.")
 
     context = {
         "form": form,
         "found_user": found_user,
         "searched": searched,
-        "user_following": user_following,
-        "user_follower": user_follower,
+        "user_following_objects": user_following_objects,
+        "user_follower_objects": user_follower_objects,
+        "specific_message": True,
     }
-    return render(request, "book_review/follow.html", context)
+    return render(request, "book_reviews/follow.html", context)
 
 
 @login_required
@@ -60,6 +64,7 @@ def follow_action(request):
 
             if UserFollows.objects.filter(user=request.user, followed_user=followed_user).exists():
                 messages.info(request, f"Vous suivez déja {followed_user.username} !")
+                return redirect("manage_users")
 
             follow = UserFollows(user= request.user, followed_user=followed_user)
             follow.save()
@@ -77,7 +82,7 @@ def follow_action(request):
             UserFollows.objects.filter(user=request.user, followed_user=unfollow_user).delete()
             messages.success(request, f"Vous ne suivez plus {unfollow_user.username}")
 
-    return render(request, "book_reviews/follow.html")
+    return redirect("manage_users")
 
 
 @login_required
