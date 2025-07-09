@@ -1,25 +1,22 @@
-
 {% extends 'base.html' %}
 {% block content %}
+    <main>
+        <div class="form-container">
+            <h1>Créer un ticket et une critique</h1>
 
-    <h1>Crée une critique</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <h2>Ticket</h2>
+                {{ ticket_form.as_p }}
 
-    <form action ="" method="post" enctype="multipart/form-data" novalidate>
-        {% csrf_token %}
+                <h2>Critique</h2>
+                {{ review_form.as_p }}
 
-        <div class="ticket-section"></div>
-            <h2>Livre / Article</h2>
-            {{ ticket_form.as_p }}
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Envoyer</button>
+                </div>
+            </form>
         </div>
-
-        <div class="review-section">
-            <h2>Ma critique</h2>
-            {{ review_form.as_p }}
-        </div>
-
-        <input type="submit" value="Envoyer">
-    </form>
-
-    <p><a href="{% url 'home' %}">Retour au flux</a></p>
-
+    </main>
 {% endblock content %}

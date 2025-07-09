@@ -4,6 +4,8 @@ from .forms import TicketForm, ReviewForm, SearchUserForm
 from django.contrib import messages
 from book_reviews.models import Ticket, Review, UserFollows
 from django.contrib.auth import get_user_model
+from itertools import chain
+from django.db.models import CharField, Value
 
 User = get_user_model()
 
@@ -102,8 +104,8 @@ def create_ticket(request):
 
 
 @login_required
-def update_ticket(request, id):
-    ticket = get_object_or_404(Ticket, id=id)
+def update_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
 
     if ticket.user != request.user:
         messages.error(request, "Vous n'avez pas la permission de modifier ce billet.")
@@ -114,18 +116,22 @@ def update_ticket(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, "Votre billet a été modifié avec succès !")
-            return redirect("home")
+            return redirect("posts")
         
     else:
         form = TicketForm(instance=ticket)
     
-    context = {"form":form, "ticket": ticket}
+    context = {
+        "form":form,
+        "ticket": ticket
+        }
+    
     return render(request, "book_reviews/update_ticket.html", context)
 
 
 @login_required
-def delete_ticket(request, id):
-    ticket = get_object_or_404(Ticket, id=id)
+def delete_ticket(request, ticket_id):
+    ticket = get_object_or_404(Ticket, id=ticket_id)
 
     if ticket.user != request.user:
         messages.error(request, "Vous n'avez pas la permission de supprimer ce billet.")
@@ -133,7 +139,7 @@ def delete_ticket(request, id):
     
     if request.method == "POST":
         ticket.delete()
-        return redirect('post')
+        return redirect('posts')
 
     context = {"ticket": ticket}
     return render(request, "book_reviews/delete_ticket.html", context)
@@ -155,13 +161,17 @@ def create_review(request, ticket_id):
     else:
         form = ReviewForm()
 
-    context = {"form": form, "ticket": ticket}
+    context = {
+        "form": form,
+        "ticket": ticket
+        }
+
     return render(request, "book_reviews/create_review.html", context)
 
 
 @login_required
-def update_review(request, id):
-    review = get_object_or_404(Review, id=id)
+def update_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
 
     if review.user != request.user:
         messages.error(request, "Vous n'avez pas la permission de modifier cette critique.")
@@ -172,18 +182,23 @@ def update_review(request, id):
         if form.is_valid():
             form.save()
             messages.success(request, "Votre critique a été modifié avec succès !")
-            return redirect("home")
+            return redirect("posts")
         
     else:
         form = ReviewForm(instance=review)
         
-    context = {"form":form, "review": review, "ticket": review.ticket}
+    context = {
+        "form":form,
+        "review": review,
+        "ticket": review.ticket
+        }
+
     return render(request, "book_reviews/update_review.html", context)
 
 
 @login_required
-def delete_review(request, id):
-    review = get_object_or_404(Review, id=id)
+def delete_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
 
     if review.user != request.user:
         messages.error(request, "Vous n'avez pas la permission de supprimer cette critique.")
@@ -191,7 +206,7 @@ def delete_review(request, id):
     
     if request.method == "POST":
         review.delete()
-        return redirect('post')
+        return redirect('posts')
 
     context = {"review": review}
     return render(request, "book_reviews/delete_review.html", context)
@@ -207,16 +222,55 @@ def create_ticket_and_review(request):
         review_form = ReviewForm(request.POST)
 
         if all([ticket_form.is_valid(), review_form.is_valid()]):
-            ticket = ticket_form.save(comit=False)
+            ticket = ticket_form.save(commit=False)
             ticket.user = request.user
             ticket.save()
 
-            review = review_form.save(comit=False)
+            review = review_form.save(commit=False)
             review.user = request.user
             review.ticket = ticket
             review.save()
 
             messages.success(request, "Billet et critique créés avec succès !")
+            return redirect("home")
 
-    context = {"ticket_form": ticket_form, "review_form": review_form}
+    context = {
+        "ticket_form": ticket_form,
+        "review_form": review_form
+        }
+
     return render(request, "book_reviews/create_ticket_and_review.html", context)
+
+
+@login_required
+def display_ticket_review_flux(request):
+    followed_user = request.user.following.values_list('followed_user__id', flat=True)
+
+    all_follow_tickets = Ticket.objects.filter(user__id__in=followed_user).annotate(content_type=Value("TICKET", CharField()))
+    all_follow_reviews = Review.objects.filter(user__id__in=followed_user).select_related("ticket").annotate(content_type=Value("REVIEW", CharField()))
+
+    all_user_tickets = Ticket.objects.filter(user=request.user).annotate(content_type=Value("TICKET", CharField()))
+    all_user_reviews = Review.objects.filter(user=request.user).select_related("ticket").annotate(content_type=Value("REVIEW", CharField()))
+    all_reviews_ticket_user = Review.objects.filter(ticket__user=request.user).exclude(user=request.user).select_related("ticket").annotate(content_type=Value("REVIEW", CharField()))
+    id_user_tickets = Review.objects.filter(user=request.user).values_list("ticket__id", flat=True)
+
+
+    flux = sorted(chain(all_follow_tickets, all_follow_reviews, all_user_tickets, all_user_reviews, all_reviews_ticket_user), key=lambda post: post.time_created, reverse=True)
+
+    context = {
+        "flux": flux,
+        "id_user_tickets": id_user_tickets
+        }
+
+    return render(request, "book_reviews/home.html", context)
+
+
+@login_required
+def display_ticket_review_posts(request):
+    all_user_tickets = Ticket.objects.filter(user=request.user).annotate(content_type=Value("TICKET", CharField()))
+    all_user_reviews = Review.objects.filter(user=request.user).select_related("ticket").annotate(content_type=Value("REVIEW", CharField()))
+
+    posts = sorted(chain(all_user_reviews, all_user_tickets), key=lambda post: post.time_created, reverse=True)
+    context = {"posts": posts}
+    
+    return render(request, "book_reviews/posts.html", context)

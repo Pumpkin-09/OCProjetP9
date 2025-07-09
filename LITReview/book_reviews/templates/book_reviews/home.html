@@ -1,6 +1,79 @@
-
 {% extends 'base.html' %}
 {% block content %}
-    <a href="{% url 'create_ticket' %}" class="btn">Demander une critique</a>
-    <a href="{% url 'create_ticket_and_review' %}" class="btn">Créer une critique</a>
+    <div class="top-buttons-container">
+        <a href="{% url 'create_ticket' %}" class="btn">Demander une critique</a>
+        <a href="{% url 'create_ticket_and_review' %}" class="btn">Créer une critique</a>
+    </div>
+
+    {% for display_flux in flux %}
+        <div class="main-container">
+            {% if display_flux.content_type == 'TICKET' %}
+                <div class="ticket-card">
+                    <div class="card-header">
+                        {% if display_flux.user == request.user %}
+                            <p>Vous avez demandé une critique</p>
+                        {% else %}
+                            <p>{{ display_flux.user }} a demandé une critique</p>
+                        {% endif %}
+                        <p class="date">{{ display_flux.time_created|date:"H:i, d F Y" }}</p>
+                    </div>
+                    <p class="ticket-title">{{ display_flux.title }}</p>
+                    <p class="ticket-description">{{ display_flux.description }}</p>
+                    {% if display_flux.image %}
+                        <div class="image-container">
+                            <img src="{{ display_flux.image.url }}" alt="Couverture du livre {{ display_flux.title }}" class="ticket-image">
+                        </div>
+                    {% endif %}
+
+                    {% if display_flux.id not in id_user_tickets %}
+                        <div class="create-review-section">
+                            <a href="{% url 'create_review' display_flux.id %}" class="btn">Créer une critique</a>
+                        </div>
+                    {% endif %}
+                </div> {# Fin du <div class="ticket-card"> #}
+
+            {% elif display_flux.content_type == 'REVIEW' %}
+                <div class="review-card">
+                    <div class="card-header">
+                        {% if display_flux.user == request.user %}
+                            <p>Vous avez publié une critique</p>
+                        {% else %}
+                            <p>{{ display_flux.user }} a publié une critique</p>
+                        {% endif %}
+                        <p class="date">{{ display_flux.time_created|date:"H:i, d F Y" }}</p>
+                    </div>
+                    <div class="review-content">
+                        <p class="review-headline">{{ display_flux.headline }}</p>
+                        <p class="rating-stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= display_flux.rating %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        <p class="review-body">{{ display_flux.body }}</p>
+                    </div>
+                </div> {# Fin du <div class="review-card"> #}
+
+                {% if display_flux.ticket %}
+                    <div class="ticket-card">
+                        <div class="card-header">
+                            <p>Ticket - {{ display_flux.ticket.user }}</p>
+                            <p class="date">{{ display_flux.ticket.time_created|date:"H:i, d F Y" }}</p>
+                        </div>
+                        <p class="ticket-title">{{ display_flux.ticket.title }}</p>
+                        <p class="ticket-description">{{ display_flux.ticket.description }}</p>
+                        {% if display_flux.ticket.image %}
+                            <div class="image-container">
+                                <img src="{{ display_flux.ticket.image.url }}" alt="Couverture du livre {{ display_flux.ticket.title }}" class="ticket-image">
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            {% endif %} {# Fin du {% if content_type %} ou {% elif content_type %} #}
+        </div> {# Fin du <div class="main-container"> #}
+    {% endfor %} {# Fin du {% for display_flux in flux %} #}
 {% endblock content %}

@@ -1,10 +1,31 @@
+{% extends 'base.html' %}
+{% block content %}
+    <main>
+        <div class="form-container">
+            <h1>Supprimer le ticket ?</h1>
+            <p class="confirmation-message">Êtes-vous sûr de vouloir supprimer le ticket suivant :</p>
+            
+            <div class="ticket-card preview-ticket">
+                <div class="card-header">
+                    <p>Ticket de : {{ ticket.user }}</p>
+                    <p class="date">{{ ticket.time_created|date:"H:i, d F Y" }}</p>
+                </div>
+                <p class="ticket-title">{{ ticket.title }}</p>
+                <p class="ticket-description">{{ ticket.description }}</p>
+                {% if ticket.image %}
+                    <div class="image-container">
+                        <img src="{{ ticket.image.url }}" alt="Couverture du livre {{ ticket.title }}" class="ticket-image">
+                    </div>
+                {% endif %}
+            </div>
 
-<h1>Supprimer le billet</h1>
-
-<p>Etes-vous sûr de vouloir supprimer le billet : {{ ticket.title }} ?</p>
-
-<form action="" method="post">
-{% csrf_token %}
-<input type="submit" value="Supprimer" class="delete-button">
-<a href="{% url 'post' %}" class="cancel-button">Annuler</a>
-</form>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-actions delete-actions">
+                    <a href="{% url 'posts' %}" class="btn-cancel">Annuler</a>
+                    <button type="submit" class="btn-delete">Confirmer la suppression</button>
+                </div>
+            </form>
+        </div>
+    </main>
+{% endblock content %}

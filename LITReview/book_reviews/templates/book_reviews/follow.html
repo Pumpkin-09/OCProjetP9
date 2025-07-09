@@ -1,74 +1,65 @@
 
 {% extends 'base.html' %}
 {% block content %}
+    <div class="form-container search-user-container">
+        <h1>Gérer les abonnements</h1>
 
-    <h1>Suivre d'autres utilisateurs</h1>
+        <h2>Rechercher un utilisateur</h2>
+        <form method="get" action="{% url 'manage_users' %}" class="search-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Rechercher</button>
+            </div>
+        </form>
 
-    <form action ="{% url 'manage_users' %}" method="get">
-        {% csrf_token %}
-
-        {{ form.user_searched }}
-            {% if searched and form.user_searched.errors %}
-                <ul class="errorlist">
-                    {% for error in form.user_searched.errors %}
-                        <li>{{ error }}</li>
+        {% if searched %}
+            {% if found_user %}
+                <h2 class="search-results-title">Résultats de la recherche :</h2>
+                <ul class="user-list">
+                    {% for user in found_user %}
+                        <li class="user-item">
+                            <span>{{ user.username }}</span>
+                            <form method="post" action="{% url 'follow_action' %}" class="follow-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="followed_user_id" value="{{ user.id }}">
+                                <button type="submit" name="action" value="follow" class="btn-follow">S'abonner</button>
+                            </form>
+                        </li>
                     {% endfor %}
                 </ul>
             {% endif %}
-        <input type="submit" value="Envoyer">
-    </form>
+        {% endif %}
 
-    {% if messages %}
-        <ul class="messages">
-            {% for message in messages %}
-                <li{% if message.tags %} class ="{{ message.tag }}"{% endif %}>{{ message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+        <h2>Utilisateurs que vous suivez :</h2>
+        {% if user_following_objects %}
+            <ul class="user-list">
+                {% for user_followed in user_following_objects %}
+                    <li class="user-item">
+                        <span>{{ user_followed.username }}</span>
+                        <form method="post" action="{% url 'follow_action' %}" class="follow-form">
+                            {% csrf_token %}
+                            <input type="hidden" name="unfollow_user_id" value="{{ user_followed.id }}">
+                            <button type="submit" name="action" value="unfollow" class="btn-unfollow">Se désabonner</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-results">Vous ne suivez aucun utilisateur pour le moment.</p>
+        {% endif %}
 
-    {% if searched and found_user %}
-        <h2>Résultat de la recherche:</h2>
-        <ul class="list_user">
-            {% for found in found_user%}
-            <li>
-                <span>{{ found.username }}</span>
-                <form action ="{% url 'follow_action' %}" method="post" style="display: inline;">
-                    {% csrf_token %}
-                    <input type="hidden" name="followed_user_id" value="{{ found.id }}">
-                    <input type="hidden" name="action" value="follow">
-                    <input type="submit" value="Suivre">
-                </form>
-            </li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
-    <h1>Abonnements</h1>
-
-    <form action ="{% url 'follow_action' %}" method="post">
-        {% csrf_token %}
-        <ul class="follow_user">
-            {% for user in user_following_objects %}
-            <li>
-                {{ user.username }}
-                    <form action ="{% url 'follow_action' %}" method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="unfollow_user_id" value="{{ user.id }}">
-                    <input type="hidden" name="action" value="unfollow">
-                    <input type="submit" value="Désabonner">
-                </form>
-            </li>
-            {% endfor %}
-        </ul>
-    </form>
-
-    <h1>Abonnés</h1>
-    <ul class="follower_user">
-        {% for follower in user_follower_objects %}
-        <li>
-            {{ follower.username }}
-        </li>
-        {% endfor %}
-    </ul>
-
+        <h2>Vos abonnés :</h2>
+        {% if user_follower_objects %}
+            <ul class="user-list">
+                {% for user_follower in user_follower_objects %}
+                    <li class="user-item">
+                        <span>{{ user_follower.username }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="no-results">Personne ne vous suit pour le moment.</p>
+        {% endif %}
+    </div>
 {% endblock content %}

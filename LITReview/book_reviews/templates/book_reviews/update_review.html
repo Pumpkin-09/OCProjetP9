@@ -1,15 +1,33 @@
-
 {% extends 'base.html' %}
 {% block content %}
+    <main>
+        <div class="form-container">
+            <h1>Modifier la critique</h1>
 
-    <h1>Modifier la critique : {{ review.title }}</h1>
-    <h2>Livre / Article</h2>
-    <form action ="" method="post" novalidate>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Modifier la crituque">
-    </form>
+            {# Afficher le ticket associé à la critique #}
+            <div class="ticket-card preview-ticket">
+                <div class="card-header">
+                    <p>Ticket pour : {{ ticket.user }}</p>
+                    <p class="date">{{ ticket.time_created|date:"H:i, d F Y" }}</p>
+                </div>
+                <p class="ticket-title">{{ ticket.title }}</p>
+                <p class="ticket-description">{{ ticket.description }}</p>
+                {% if ticket.image %}
+                    <div class="image-container">
+                        <img src="{{ ticket.image.url }}" alt="Couverture du livre {{ ticket.title }}" class="ticket-image">
+                    </div>
+                {% endif %}
+            </div>
 
-    <p><a href="{% url 'home' %}">Retour au flux</a></p>
+            <form method="post">
+                {% csrf_token %}
+                
+                {{ form.as_p }}
 
-{% endblock content %}
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Mettre à jour</button>
+                </div>
+            </form>
+        </div>
+    </main>
+{% endblock content %} 

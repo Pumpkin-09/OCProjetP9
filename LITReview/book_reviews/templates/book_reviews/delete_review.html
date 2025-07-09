@@ -1,10 +1,37 @@
+{% extends 'base.html' %}
+{% block content %}
+    <main>
+        <div class="form-container">
+            <h1>Supprimer la critique ?</h1>
+            <p class="confirmation-message">Êtes-vous sûr de vouloir supprimer la critique suivante :</p>
+            
+            <div class="review-card preview-review">
+                <div class="card-header">
+                    <p>Critique de : {{ review.user }}</p>
+                    <p class="date">{{ review.time_created|date:"H:i, d F Y" }}</p>
+                </div>
+                <div class="review-content">
+                    <p class="review-headline">{{ review.headline }}</p>
+                    <p class="rating-stars">
+                        {% for i in "12345" %}
+                            {% if forloop.counter <= review.rating %}
+                                ★
+                            {% else %}
+                                ☆
+                            {% endif %}
+                        {% endfor %}
+                    </p>
+                    <p class="review-body">{{ review.body }}</p>
+                </div>
+            </div>
 
-<h1>Supprimer la critique</h1>
-
-<p>Etes-vous sûr de vouloir supprimer la critique : {{ review.title }} ?</p>
-
-<form action="" method="post">
-{% csrf_token %}
-<input type="submit" value="Supprimer" class="delete-button">
-<a href="{% url 'post' %}" class="cancel-button">Annuler</a>
-</form>
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-actions delete-actions">
+                    <a href="{% url 'posts' %}" class="btn-cancel">Annuler</a>
+                    <button type="submit" class="btn-delete">Confirmer la suppression</button>
+                </div>
+            </form>
+        </div>
+    </main>
+{% endblock content %}

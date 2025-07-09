@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ticket, Review, UserFollows
+from .models import Ticket, Review
 
 
 class TicketForm(forms.ModelForm):

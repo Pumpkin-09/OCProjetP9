@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="top-buttons-container">
+        <a href="{% url 'create_ticket' %}" class="btn">Demander une critique</a>
+        <a href="{% url 'create_ticket_and_review' %}" class="btn">Créer une critique</a>
+    </div>
+
+    {% for post in posts %}
+        <div class="main-container">
+            {% if post.content_type == 'TICKET' %}
+                <div class="ticket-card">
+                    <div class="card-header">
+                        <p>Vous avez demandé une critique</p>
+                        <p class="date">{{ post.time_created|date:"H:i, d F Y" }}</p>
+                    </div>
+                    <p class="ticket-title">{{ post.title }}</p>
+                    <p class="ticket-description">{{ post.description }}</p>
+                    {% if post.image %}
+                        <div class="image-container">
+                            <img src="{{ post.image.url }}" alt="Couverture du livre {{ post.title }}" class="ticket-image">
+                        </div>
+                    {% endif %}
+                    <div class="card-actions">
+                        <a href="{% url 'update_ticket' post.id %}" class="btn-update">Modifier Ticket</a>
+                        <a href="{% url 'delete_ticket' post.id %}" class="btn-delete">Supprimer Ticket</a>
+                    </div>
+                </div> {# Fin du <div class="ticket-card"> #}
+
+            {% elif post.content_type == 'REVIEW' %}
+                <div class="review-card">
+                    <div class="card-header">
+                        <p>Vous avez publié une critique</p>
+                        <p class="date">{{ post.time_created|date:"H:i, d F Y" }}</p>
+                    </div>
+                    <div class="review-content">
+                        <p class="review-headline">{{ post.headline }}</p>
+                        <p class="rating-stars">
+                            {% for i in "12345" %}
+                                {% if forloop.counter <= post.rating %}
+                                    ★
+                                {% else %}
+                                    ☆
+                                {% endif %}
+                            {% endfor %}
+                        </p>
+                        <p class="review-body">{{ post.body }}</p>
+                    </div>
+                    <div class="card-actions">
+                        <a href="{% url 'update_review' post.id %}" class="btn-update">Modifier Critique</a>
+                        <a href="{% url 'delete_review' post.id %}" class="btn-delete">Supprimer Critique</a>
+                    </div>
+                </div> {# Fin du <div class="review-card"> #}
+
+                {% if post.ticket %}
+                    <div class="ticket-card">
+                        <div class="card-header">
+                            <p>Ticket - {{ post.ticket.user }}</p>
+                            <p class="date">{{ post.ticket.time_created|date:"H:i, d F Y" }}</p>
+                        </div>
+                        <p class="ticket-title">{{ post.ticket.title }}</p>
+                        <p class="ticket-description">{{ post.ticket.description }}</p>
+                        {% if post.ticket.image %}
+                            <div class="image-container">
+                                <img src="{{ post.ticket.image.url }}" alt="Couverture du livre {{ post.ticket.title }}" class="ticket-image">
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+
+            {% endif %}
+        </div> {# Fin du <div class="main-container"> #}
+    {% endfor %}
+{% endblock content %}

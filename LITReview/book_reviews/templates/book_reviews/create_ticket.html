@@ -1,15 +1,18 @@
-
 {% extends 'base.html' %}
 {% block content %}
+    <main>
+        <div class="form-container">
+            <h1>Créer un ticket</h1>
 
-    <h1>Crée un billet</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                {{ form.as_p }}
 
-    <form action ="" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Envoyer">
-    </form>
-
-    <p><a href="{% url 'home' %}">Retour au flux</a></p>
-
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">Envoyer</button>
+                </div>
+            </form>
+        </div>
+    </main>
 {% endblock content %}

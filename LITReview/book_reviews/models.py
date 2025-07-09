@@ -31,6 +31,7 @@ class Review(models.Model):
 
     class Meta:
         ordering = ["-time_created"]
+        unique_together = ['user', 'ticket']
 
 
 class UserFollows(models.Model):
