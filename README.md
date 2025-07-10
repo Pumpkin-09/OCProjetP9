@@ -16,7 +16,7 @@ Notre application permet de demander ou publier des critiques de livres ou d'art
 
 ### 1. Cloner le projet
 ```bash
-git clone https://github.com/votre-username/votre-projet.git
+git clone https://github.com/Pumpkin-09/OCProjetP9.git
 cd votre-projet
 ```
 
